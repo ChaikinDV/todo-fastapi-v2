@@ -1,0 +1,23 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.3.0
+    hooks:
+      # Линтер: проверяет код и исправляет ошибки
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      # Форматтер: приводит код к единому стилю
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      # Проверка на добавление больших файлов (> 5MB)
+      - id: check-added-large-files
+      # Проверка, что файлы заканчиваются пустой строкой
+      - id: end-of-file-fixer
+      # Проверка на trailing whitespace
+      - id: trailing-whitespace
+      # Проверка на конфликтные маркеры (<<<<<<<, =======, >>>>>>>)
+      - id: check-merge-conflict
+      # Проверка на наличие shebang в исполняемых файлах
+      - id: check-shebang-scripts-are-executable

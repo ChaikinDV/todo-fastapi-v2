@@ -1,0 +1,73 @@
+import os
+import sys
+from logging.config import fileConfig
+
+from sqlalchemy import engine_from_config
+from sqlalchemy import pool
+
+from alembic import context
+
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
+from app.database import Base
+from app.config import settings
+import app.models
+
+config = context.config
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
+
+target_metadata = Base.metadata
+
+database_url = settings.DATABASE_URL
+config.set_main_option("sqlalchemy.url", database_url)
+
+# Выводим в консоль для отладки (можно закомментировать потом)
+print(f"=== Alembic использует БД: {database_url} ===")
+
+
+def run_migrations_offline() -> None:
+    """
+    Режим OFFLINE - используется, когда у нас нет подключения к БД.
+    Alembic просто генерирует SQL-скрипты, не выполняя их.
+    """
+    url = config.get_main_option("sqlalchemy.url")
+    context.configure(
+        url=url,
+        target_metadata=target_metadata,
+        literal_binds=True,
+        dialect_opts={"paramstyle": "named"},
+    )
+
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+def run_migrations_online() -> None:
+    """
+    Режим ONLINE - самый частый случай.
+    Alembic подключается к БД и выполняет миграции напрямую.
+    """
+    # Создаём подключение к БД используя наш URL
+    connectable = engine_from_config(
+        config.get_section(config.config_ini_section, {}),
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
+    )
+
+    # Подключаемся и выполняем миграции
+    with connectable.connect() as connection:
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata
+        )
+
+        with context.begin_transaction():
+            context.run_migrations()
+
+
+# Автоматически выбираем нужный режим
+if context.is_offline_mode():
+    run_migrations_offline()
+else:
+    run_migrations_online()

@@ -68,4 +68,3 @@ Swagger UI: http://localhost:8000/docs
 - **tests/test_main.py** - Unit-тесты
 - **requirements.txt** - Зависимости
 - **README.md** - Документация
-
