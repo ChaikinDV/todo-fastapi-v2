@@ -1,40 +1,18 @@
-# Базовый образ с Python
 FROM python:3.11-slim
 
-# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Устанавливаем системные зависимости
-# netcat-openbsd - утилита nc для проверки портов
-# libpq-dev - нужна для psycopg2 (PostgreSQL)
-RUN apt-get update && apt-get install -y \
-    gcc \
-    libpq-dev \
-    netcat-openbsd \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y gcc libpq-dev netcat-openbsd && rm -rf /var/lib/apt/lists/*
 
-# Копируем файл с зависимостями
 COPY requirements.txt .
 
-# Устанавливаем Python-зависимости
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --timeout 60 --retries 5 \
+    --index-url https://pypi.org/simple \
+    --extra-index-url https://mirror.yandex.ru/pypi/simple \
+    -r requirements.txt
 
-# Копируем скрипт запуска и делаем его исполняемым
-COPY entrypoint.sh .
-RUN chmod +x entrypoint.sh
-
-# Копируем весь код приложения
 COPY . .
+RUN sed -i 's/\r$//' entrypoint.sh && chmod +x entrypoint.sh
 
-# Указываем порт
 EXPOSE 8000
-
-# Точка входа: запускаем entrypoint.sh
 ENTRYPOINT ["./entrypoint.sh"]
-
-# Копируем файлы с зависимостями
-COPY requirements.txt requirements-dev.txt ./
-
-# Устанавливаем зависимости (и продакшен, и dev)
-RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir -r requirements-dev.txt

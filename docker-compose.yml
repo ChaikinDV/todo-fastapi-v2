@@ -32,7 +32,6 @@ services:
       - SECRET_KEY=your-secret-key-for-dev
     volumes:
       - ./:/app
-    # command: убрали — теперь используется entrypoint.sh
     restart: unless-stopped
 
 volumes:

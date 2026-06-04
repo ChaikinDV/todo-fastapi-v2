@@ -4,16 +4,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Настройки приложения из переменных окружения"""
+    PROJECT_NAME: str = "Todo API 2"
+    VERSION: str = "2.0.0"
 
-    # Название проекта
-    PROJECT_NAME: str = "Todo API"
-    VERSION: str = "1.0.0"
+    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/todo_db"
 
-    # База данных — теперь может быть PostgreSQL
-    DATABASE_URL: str = "sqlite:///./todos.db"  # По умолчанию SQLite
-
-    # Безопасность
     SECRET_KEY: str = "your-secret-key-here"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
