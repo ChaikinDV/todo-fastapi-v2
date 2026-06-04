@@ -61,7 +61,8 @@ source venv/bin/activate  # Linux/Mac
 venv\Scripts\activate   # Windows
 
 # Установите зависимости
-pip install -r requirements.txt
+pip install -r requirements.txt #для запуска и тестов
+pip install -r requirements-dev.txt #для запуска, тестов + ruff и pre-commit
 
 # Скопируйте файл с переменными окружения
 cp .env.example .env
@@ -70,7 +71,7 @@ cp .env.example .env
 # Примените миграции
 alembic upgrade head
 
-# Запусти сервер
+# Запустите сервер
 uvicorn app.main:app --reload
 ```
 
